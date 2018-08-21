@@ -4,12 +4,27 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const jwt = require('express-jwt');
+const jwksRsa = require('jwks-rsa');
 
 // define the Express app
 const app = express();
 
 // the database
-const questions = [];
+const questions = [
+  {
+    id: 1,
+    title: "How to make a sandwich?",
+    description: "I am trying very hard but I do not know how to make a delicious sandwich. Can someone help me?",
+    answers: [],
+  },
+  {
+    id: 2,
+    title: "Is it cool to work remotely?",
+    description: "I have seen a lot of new opportunities to work from home. Does anyone here have experience with this kind of job? Does it worth it?",
+    answers: [],
+  }
+];
 
 // enhance your app security with Helmet
 app.use(helmet());
@@ -42,8 +57,22 @@ app.get('/:id', (req, res) => {
   res.send(question[0]);
 });
 
+const checkJwt = jwt({
+  secret: jwksRsa.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: `https://bk-tmp.auth0.com/.well-known/jwks.json`
+  }),
+
+  // Validate the audience and the issuer.
+  audience: 'j4O1E0wARuJOPGchr6N740Z2KWaTzOjA',
+  issuer: `https://bk-tmp.auth0.com/`,
+  algorithms: ['RS256']
+});
+
 // insert a new question
-app.post('/', (req, res) => {
+app.post('/', checkJwt, (req, res) => {
   const {title, description} = req.body;
   const newQuestion = {
     id: questions.length + 1,
@@ -56,7 +85,7 @@ app.post('/', (req, res) => {
 });
 
 // insert a new answer to a question
-app.post('/answer/:id', (req, res) => {
+app.post('/answer/:id', checkJwt, (req, res) => {
   const {answer} = req.body;
 
   const question = questions.filter(q => (q.id === parseInt(req.params.id)));
