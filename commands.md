@@ -48,7 +48,8 @@ mkdir src
 touch src/index.js
 ```
 
-```bash
-touch src/routes.js
-```
+## Routing and basic stuff
 
+```bash
+npm i react-router react-router-dom axios
+```

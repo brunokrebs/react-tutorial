@@ -25,8 +25,11 @@ app.use(morgan('combined'));
 
 // retrieve all questions
 app.get('/', (req, res) => {
-  const titlesOnly = questions.map(q => ({title: q.title}));
-  res.send(titlesOnly);
+  const qs = questions.map(q => ({
+    id: q.id,
+    title: q.title,
+  }));
+  res.send(qs);
 });
 
 // get a specific question
