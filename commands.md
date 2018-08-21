@@ -35,3 +35,20 @@ npm start
 ```
 
 go to [`http://localhost:3000`](http://localhost:3000)
+
+## Developing the Backend
+
+```bash
+mkdir backend
+cd backend
+npm init -y
+npm i express body-parser cors morgan helmet
+
+mkdir src
+touch src/index.js
+```
+
+```bash
+touch src/routes.js
+```
+
