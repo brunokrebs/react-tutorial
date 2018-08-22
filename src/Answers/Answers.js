@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'axios';
+import SubmitAnswer from './SubmitAnswer';
+import auth0Client from '../Auth';
 
 class Answers extends Component {
   constructor(props) {
@@ -7,9 +9,15 @@ class Answers extends Component {
     this.state = {
       question: null,
     };
+
+    this.submitAnswer = this.submitAnswer.bind(this);
   }
 
   async componentDidMount() {
+    await this.refreshQuestion();
+  }
+
+  async refreshQuestion() {
     const { match: { params } } = this.props;
     const question = (await axios.get(`http://localhost:8081/${params.questionId}`)).data;
     this.setState({
@@ -17,25 +25,32 @@ class Answers extends Component {
     });
   }
 
+  async submitAnswer(answer) {
+    await axios.post(`http://localhost:8081/answer/${this.state.question.id}`, {
+      answer,
+    }, {
+      headers: { 'Authorization': `Bearer ${auth0Client.getIdToken()}` }
+    });
+    await this.refreshQuestion();
+  }
+
   render() {
     const {question} = this.state;
     if (question === null) return <p>Loading ...</p>;
-    console.log(question);
     return (
       <div className="container">
         <div className="row">
           <div className="jumbotron col-12">
             <h1 className="display-3">{question.title}</h1>
-            <p className="lead">{question.description}</p>
+            <p className="lead">{question.description} - {question.author}</p>
             <hr className="my-4" />
+            <SubmitAnswer questionId={question.id} submitAnswer={this.submitAnswer} />
             <p>Answers:</p>
-            <p className="lead">
-              {
-                question.answers.map((answer, idx) => (
-                  <p key={idx}>{answer.answer}</p>
-                ))
-              }
-            </p>
+            {
+              question.answers.map((answer, idx) => (
+                <p className="lead" key={idx}>{answer.answer} - {answer.author}</p>
+              ))
+            }
           </div>
         </div>
       </div>

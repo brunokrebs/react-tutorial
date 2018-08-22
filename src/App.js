@@ -5,6 +5,8 @@ import Answers from './Answers/Answers';
 import NewQuestion from './NewQuestion/NewQuestion';
 import Questions from './Questions/Questions';
 import './App.css';
+import Callback from "./Callback/Callback";
+import SecuredRoute from './SecuredRoute/SecuredRoute';
 
 class App extends Component {
   render() {
@@ -12,8 +14,9 @@ class App extends Component {
       <div className="App">
         <NavBar/>
         <Route exact path='/' component={Questions}/>
+        <Route exact path='/callback' component={Callback}/>
         <Route exact path='/question/:questionId' component={Answers}/>
-        <Route exact path='/new-question' component={NewQuestion}/>
+        <SecuredRoute path='/new-question' component={NewQuestion} />
       </div>
     );
   }

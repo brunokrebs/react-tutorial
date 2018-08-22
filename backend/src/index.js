@@ -11,20 +11,7 @@ const jwksRsa = require('jwks-rsa');
 const app = express();
 
 // the database
-const questions = [
-  {
-    id: 1,
-    title: "How to make a sandwich?",
-    description: "I am trying very hard but I do not know how to make a delicious sandwich. Can someone help me?",
-    answers: [],
-  },
-  {
-    id: 2,
-    title: "Is it cool to work remotely?",
-    description: "I have seen a lot of new opportunities to work from home. Does anyone here have experience with this kind of job? Does it worth it?",
-    answers: [],
-  }
-];
+const questions = [];
 
 // enhance your app security with Helmet
 app.use(helmet());
@@ -79,6 +66,7 @@ app.post('/', checkJwt, (req, res) => {
     title,
     description,
     answers: [],
+    author: req.user.name,
   };
   questions.push(newQuestion);
   res.status(200).send();
@@ -92,9 +80,9 @@ app.post('/answer/:id', checkJwt, (req, res) => {
   if (question.length > 1) return res.status(500).send();
   if (question.length === 0) return res.status(404).send();
 
-  console.log(question);
   question[0].answers.push({
     answer,
+    author: req.user.name,
   });
 
   res.status(200).send();

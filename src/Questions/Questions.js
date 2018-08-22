@@ -19,7 +19,6 @@ class Questions extends Component {
   }
 
   render() {
-    console.log(this.state.questions);
     return (
       <div className="container">
         <div className="row">

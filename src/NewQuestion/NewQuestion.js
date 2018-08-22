@@ -1,4 +1,7 @@
 import React, {Component} from 'react';
+import {withRouter} from 'react-router-dom';
+import auth0Client from '../Auth';
+import axios from 'axios';
 
 class NewQuestion extends Component {
   constructor(props) {
@@ -23,10 +26,19 @@ class NewQuestion extends Component {
     });
   }
 
-  submit() {
+  async submit() {
     this.setState({
       disabled: true,
     });
+
+    await axios.post('http://localhost:8081', {
+      title: this.state.title,
+      description: this.state.description,
+    }, {
+      headers: { 'Authorization': `Bearer ${auth0Client.getIdToken()}` }
+    });
+
+    this.props.history.push('/');
   }
 
   render() {
@@ -72,4 +84,4 @@ class NewQuestion extends Component {
   }
 }
 
-export default NewQuestion;
+export default withRouter(NewQuestion);
